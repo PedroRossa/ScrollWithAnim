@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="TemplateData/style.css">
 </head>
 
-<body overflow: hidden;>
+<body>
   <!-- FLOATING DEBUG PANEL -->
   <!-- <div id="debug-panel"
     style="width: 256px; height: 256px; background-color: rgb(238, 66, 66); z-index: 1000; position: absolute;">
@@ -178,7 +178,7 @@
       //   unityInstance.SendMessage("JsBridge", "DisableUnityScroll");
       // }
     }
-    
+
     function disableScroll() {
       window.onwheel = function () {
 
@@ -190,15 +190,13 @@
         var a = 1 - currentScrollValue / headerContentHeight;
         canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + a + ")";
 
-        //if (a <= 0) {
-        {
           if (currentAnimationFrameElement == null) {
             currentAnimationFrameElement = document.querySelector("#current-animation-frame");
             return;
           }
-           
+
           var scrollOnWebGlArea = currentScrollValue > headerContentHeight && currentScrollValue < (headerContentHeight + unityContainerHeight);
-        
+
           if (scrollOnWebGlArea != isOnWebGlContext) {
             isOnWebGlContext = scrollOnWebGlArea;
             var intResponse = isOnWebGlContext ? 1 : 0;
@@ -207,20 +205,23 @@
           }
 
           if (isOnWebGlContext && !webGlAnimationRunning) {
-              webGlAnimationRunning = true;
-              canvasOverlay.style.display = "none";
-              return;
+            webGlAnimationRunning = true;
+            canvasOverlay.style.display = "none";
+            return;
           }
 
-          currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");          
+          currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
           var animationInProgress = currentAnimationFrameValue > 0 && currentAnimationFrameValue < 1;
-          
-          if(webGlAnimationRunning && !animationInProgress) {
-              webGlAnimationRunning = false;
-              canvasOverlay.style.display = "inline";
-              return;
-            }
+
+          if (isOnWebGlContext && animationInProgress) {
+              window.scroll(0, headerContentHeight+1);
           }
+
+          if (webGlAnimationRunning && !animationInProgress) {
+            webGlAnimationRunning = false;
+            canvasOverlay.style.display = "inline";
+            return;
+          }  
       };
     }
 
