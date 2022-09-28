@@ -21,7 +21,7 @@
 
   <!-- CANVAS OVERLAY -->
   <div id="canvas-overlay"
-    style="width: 256px; min-height: 256px;max-height: 256px; background-color: rgba(10, 62, 120, 1); z-index: 1000; position: absolute; display: inline;">
+    style="width: 256px; min-height: 256px;max-height: 256px; background-color: rgba(10, 62, 120, 0.1); z-index: 1000; position: absolute; display: inline;">
   </div>
 
   <!-- Top Page Content -->
@@ -169,59 +169,51 @@
       }
     }
 
-    function manageUnityCanvasScroll(unityInstance) {
+    function changeWebGlOverlayByScrollPos(scrollPosition) {
+      var canvasOverlayDistanceFromTopPage = headerContentHeight - scrollPosition;
+      canvasOverlay.style.paddingTop = canvasOverlayDistanceFromTopPage + "px";
 
-      // if (currentScrollValue > headerHeight && currentScrollValue < (headerHeight + canvasHeight)) {
-      //   unityInstance.SendMessage("JsBridge", "EnableUnityScroll");
-      // }
-      // else {
-      //   unityInstance.SendMessage("JsBridge", "DisableUnityScroll");
-      // }
+      var a = 1 - currentScrollValue / headerContentHeight;
+      canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + a + ")";
     }
 
     function disableScroll() {
       window.onwheel = function () {
-
         currentScrollValue = window.pageYOffset;
+        changeWebGlOverlayByScrollPos(currentScrollValue);
 
-        var canvasOverlayDistanceFromTopPage = headerContentHeight - currentScrollValue;
-        canvasOverlay.style.paddingTop = canvasOverlayDistanceFromTopPage + "px";
+        if (currentAnimationFrameElement == null) {
+          currentAnimationFrameElement = document.querySelector("#current-animation-frame");
+          return;
+        }
 
-        var a = 1 - currentScrollValue / headerContentHeight;
-        canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + a + ")";
+        var scrollOnWebGlArea = currentScrollValue > headerContentHeight && currentScrollValue < (headerContentHeight + unityContainerHeight);
 
-          if (currentAnimationFrameElement == null) {
-            currentAnimationFrameElement = document.querySelector("#current-animation-frame");
-            return;
-          }
+        if (scrollOnWebGlArea != isOnWebGlContext) {
+          isOnWebGlContext = scrollOnWebGlArea;
+          var intResponse = isOnWebGlContext ? 1 : 0;
+          unityInstance.SendMessage('JsBridge', 'SetWebGlContextState', intResponse);
+          console.log("Context changed. new value: " + isOnWebGlContext);
+        }
 
-          var scrollOnWebGlArea = currentScrollValue > headerContentHeight && currentScrollValue < (headerContentHeight + unityContainerHeight);
+        if (isOnWebGlContext && !webGlAnimationRunning) {
+          webGlAnimationRunning = true;
+          canvasOverlay.style.display = "none";
+          return;
+        }
 
-          if (scrollOnWebGlArea != isOnWebGlContext) {
-            isOnWebGlContext = scrollOnWebGlArea;
-            var intResponse = isOnWebGlContext ? 1 : 0;
-            unityInstance.SendMessage('JsBridge', 'SetWebGlContextState', intResponse);
-            console.log("Context changed. new value: " + isOnWebGlContext);
-          }
+        currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
+        var animationInProgress = currentAnimationFrameValue > 0 && currentAnimationFrameValue < 1;
 
-          if (isOnWebGlContext && !webGlAnimationRunning) {
-            webGlAnimationRunning = true;
-            canvasOverlay.style.display = "none";
-            return;
-          }
+        if (isOnWebGlContext && animationInProgress) {
+          window.scroll(0, headerContentHeight + 1);
+        }
 
-          currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
-          var animationInProgress = currentAnimationFrameValue > 0 && currentAnimationFrameValue < 1;
-
-          if (isOnWebGlContext && animationInProgress) {
-              window.scroll(0, headerContentHeight+1);
-          }
-
-          if (webGlAnimationRunning && !animationInProgress) {
-            webGlAnimationRunning = false;
-            canvasOverlay.style.display = "inline";
-            return;
-          }  
+        if (webGlAnimationRunning && !animationInProgress) {
+          webGlAnimationRunning = false;
+          canvasOverlay.style.display = "inline";
+          return;
+        }
       };
     }
 
@@ -236,13 +228,70 @@
         unityInstance = uInstance;
         loadingBar.style.display = "none";
         setToggleLight(unityInstance);
-        disableScroll();
+        //disableScroll();
+
+        sendWebGlCanvasInfoToUnityApplication(headerContentHeight, unityContainerWidth, unityContainerHeight);
 
       }).catch((message) => {
         alert(message);
       });
     };
     document.body.appendChild(script);
+
+    //INPUT MAP FROM WEBPAGE TO UNITY
+    //########################################################################################################
+
+    let currentKnowScrollPosition = 0;
+    let ticking = false;
+
+
+    function sendScrollDataToUnity(scrollPos, deltaY) {
+
+      //console.log("[JS] wheel DeltaY: " + deltaY + " ScrollPos: " + scrollPos);
+
+      unityInstance.SendMessage('JsBridge', 'JsScrollPositionChanged', scrollPos);
+      unityInstance.SendMessage('JsBridge', 'JsDeltaYChanged', deltaY);
+    }
+
+    document.addEventListener('wheel', (e) => {
+      currentKnowScrollPosition = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
+
+          var a = getUnityAnimationFrame();
+          var insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
+          console.log(insideOfWebGlCanvas, a)
+          if (insideOfWebGlCanvas && a > 0 && a < 1) {
+            window.scrollTo(0, headerContentHeight);
+          }
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
+    });
+
+    function sendWebGlCanvasInfoToUnityApplication(initialPos, canvasWidth, canvasHeight) {
+      unityInstance.SendMessage('JsBridge', 'JsGetInitialWebGlPosition', initialPos);
+      unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasWidth', canvasWidth);
+      unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasHeight', canvasHeight);
+    }
+
+    function getUnityAnimationFrame() {
+      if (currentAnimationFrameElement == null) {
+        currentAnimationFrameElement = document.querySelector("#current-animation-frame");
+        return;
+      }
+
+
+      currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
+      return currentAnimationFrameValue;
+    }
+
+    //########################################################################################################
 
   </script>
 </body>
