@@ -43,7 +43,6 @@
       <!-- <div id="unity-webgl-logo"></div> -->
       <!-- <div id="unity-fullscreen-button"></div> -->
       <!-- <div id="unity-build-title">InteractiveWebPage</div> -->
-      <button type="button" id="toggleLightsButton">Toggle Lights</button>
     </div>
   </div>
 
@@ -130,18 +129,13 @@
 
     loadingBar.style.display = "block";
 
-
     //MY CONTENT @Pedro
 
-    var toggleLightsButton = document.querySelector("#toggleLightsButton");
     var headerContent = document.querySelector("#header-content");
     var footerContent = document.querySelector("#footer-content");
-    var debugPanel = document.querySelector("#debug-panel");
     var canvasOverlay = document.querySelector("#canvas-overlay");
 
     var unityInstance = null;
-
-    var lightState = true;
 
     var headerContentHeight = headerContent.offsetHeight;
     var unityContainerWidth = container.offsetWidth;
@@ -153,20 +147,12 @@
     canvasOverlay.style.height = unityContainerHeight + "px";
     canvasOverlay.style.top = headerContentHeight + "px";
 
-    var currentScrollValue = 0;
     //hiden element to receive the current frame of the animation on webgl unity app
     var currentAnimationFrameElement;
     var currentAnimationFrameValue;
 
     var isOnWebGlContext = false;
     var webGlAnimationRunning = false;
-
-    function setToggleLight(unityInstance) {
-      toggleLightsButton.onclick = () => {
-        lightState = !lightState;
-        unityInstance.SendMessage('JsBridge', 'ToggleLights');
-      }
-    }
 
     var script = document.createElement("script");
     script.src = loaderUrl;
@@ -176,7 +162,6 @@
       }).then((uInstance) => {
         unityInstance = uInstance;
         loadingBar.style.display = "none";
-        setToggleLight(unityInstance);
         sendWebGlCanvasInfoToUnityApplication(headerContentHeight, unityContainerWidth, unityContainerHeight);
       }).catch((message) => {
         alert(message);
@@ -204,7 +189,7 @@
       sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
 
       animationFrame = getUnityAnimationFrame();
-      insideOfWebGlCanvas = currentKnowScrollPosition >= (headerContentHeight-100) && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
+      insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
       if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
         window.scrollTo(0, headerContentHeight);
