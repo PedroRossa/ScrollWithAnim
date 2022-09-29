@@ -21,7 +21,7 @@
 
   <!-- CANVAS OVERLAY -->
   <div id="canvas-overlay"
-    style="width: 256px; min-height: 256px;max-height: 256px; background-color: rgba(10, 62, 120, 0.1); z-index: 1000; position: absolute; display: inline;">
+    style="width: 256px; height: 256px; background-color: rgba(10, 62, 120, 1); z-index: 1000; position: absolute; display: inline;">
   </div>
 
   <!-- Top Page Content -->
@@ -150,8 +150,7 @@
     footerContent.style.paddingTop = unityContainerHeight + "px";
 
     canvasOverlay.style.width = unityContainerWidth + "px";
-    canvasOverlay.style.minHeight = unityContainerHeight + "px";
-    canvasOverlay.style.maxHeight = unityContainerHeight + "px";
+    canvasOverlay.style.height = unityContainerHeight + "px";
     canvasOverlay.style.top = headerContentHeight + "px";
 
     var currentScrollValue = 0;
@@ -169,56 +168,6 @@
       }
     }
 
-    function changeWebGlOverlayByScrollPos(scrollPosition) {
-      var canvasOverlayDistanceFromTopPage = headerContentHeight - scrollPosition;
-      canvasOverlay.style.paddingTop = canvasOverlayDistanceFromTopPage + "px";
-
-      var a = 1 - currentScrollValue / headerContentHeight;
-      canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + a + ")";
-    }
-
-    function disableScroll() {
-      window.onwheel = function () {
-        currentScrollValue = window.pageYOffset;
-        changeWebGlOverlayByScrollPos(currentScrollValue);
-
-        if (currentAnimationFrameElement == null) {
-          currentAnimationFrameElement = document.querySelector("#current-animation-frame");
-          return;
-        }
-
-        var scrollOnWebGlArea = currentScrollValue > headerContentHeight && currentScrollValue < (headerContentHeight + unityContainerHeight);
-
-        if (scrollOnWebGlArea != isOnWebGlContext) {
-          isOnWebGlContext = scrollOnWebGlArea;
-          var intResponse = isOnWebGlContext ? 1 : 0;
-          unityInstance.SendMessage('JsBridge', 'SetWebGlContextState', intResponse);
-          console.log("Context changed. new value: " + isOnWebGlContext);
-        }
-
-        if (isOnWebGlContext && !webGlAnimationRunning) {
-          webGlAnimationRunning = true;
-          canvasOverlay.style.display = "none";
-          return;
-        }
-
-        currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
-        var animationInProgress = currentAnimationFrameValue > 0 && currentAnimationFrameValue < 1;
-
-        if (isOnWebGlContext && animationInProgress) {
-          window.scroll(0, headerContentHeight + 1);
-        }
-
-        if (webGlAnimationRunning && !animationInProgress) {
-          webGlAnimationRunning = false;
-          canvasOverlay.style.display = "inline";
-          return;
-        }
-      };
-    }
-
-    //--------------------
-
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
@@ -228,10 +177,7 @@
         unityInstance = uInstance;
         loadingBar.style.display = "none";
         setToggleLight(unityInstance);
-        //disableScroll();
-
         sendWebGlCanvasInfoToUnityApplication(headerContentHeight, unityContainerWidth, unityContainerHeight);
-
       }).catch((message) => {
         alert(message);
       });
@@ -242,13 +188,11 @@
     //########################################################################################################
 
     let currentKnowScrollPosition = 0;
-    let ticking = false;
-
+    let animationFrame = 0.01;
+    let insideOfWebGlCanvas = false;
 
     function sendScrollDataToUnity(scrollPos, deltaY) {
-
       //console.log("[JS] wheel DeltaY: " + deltaY + " ScrollPos: " + scrollPos);
-
       unityInstance.SendMessage('JsBridge', 'JsScrollPositionChanged', scrollPos);
       unityInstance.SendMessage('JsBridge', 'JsDeltaYChanged', deltaY);
     }
@@ -256,21 +200,18 @@
     document.addEventListener('wheel', (e) => {
       currentKnowScrollPosition = window.scrollY;
 
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
+      changeWebGlOverlayByScrollPos(currentKnowScrollPosition);
+      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
 
-          var a = getUnityAnimationFrame();
-          var insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
-          console.log(insideOfWebGlCanvas, a)
-          if (insideOfWebGlCanvas && a > 0 && a < 1) {
-            window.scrollTo(0, headerContentHeight);
-          }
+      animationFrame = getUnityAnimationFrame();
+      insideOfWebGlCanvas = currentKnowScrollPosition >= (headerContentHeight-100) && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
-          ticking = false;
-        });
-
-        ticking = true;
+      if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
+        window.scrollTo(0, headerContentHeight);
+        document.body.style.overflow = "hidden";
+      }
+      else {
+        document.body.style.overflow = "scroll";
       }
     });
 
@@ -278,17 +219,25 @@
       unityInstance.SendMessage('JsBridge', 'JsGetInitialWebGlPosition', initialPos);
       unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasWidth', canvasWidth);
       unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasHeight', canvasHeight);
+
+      animationFrame = getUnityAnimationFrame();
     }
 
     function getUnityAnimationFrame() {
       if (currentAnimationFrameElement == null) {
         currentAnimationFrameElement = document.querySelector("#current-animation-frame");
-        return;
+        return -1;
       }
-
-
       currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
       return currentAnimationFrameValue;
+    }
+
+    function changeWebGlOverlayByScrollPos(scrollPos, animationPos) {
+      let canvasOverlayDistanceFromTopPage = headerContentHeight - scrollPos;
+      canvasOverlay.style.paddingTop = canvasOverlayDistanceFromTopPage + "px";
+
+      let alpha = 1 - scrollPos / headerContentHeight;   
+      canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + alpha + ")";
     }
 
     //########################################################################################################
