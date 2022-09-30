@@ -147,8 +147,8 @@
     canvasOverlay.style.height = unityContainerHeight + "px";
     canvasOverlay.style.top = headerContentHeight + "px";
 
-    const pageWidth  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    const pageHeight = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
+    const pageWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    const pageHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
     //hiden element to receive the current frame of the animation on webgl unity app
     var currentAnimationFrameElement;
@@ -183,10 +183,21 @@
       unityInstance.SendMessage('JsBridge', 'JsDeltaYChanged', deltaY);
     }
 
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-    document.addEventListener('mousewheel', (e) => {
+    if (isSafari) {
+      console.log('Is safari');
+      document.addEventListener('mousewheel', onWheel);
+    } else {
+      console.log('Is other browser');
+      document.addEventListener('wheel', onWheel);
+    }
+
+
+
+    function onWheel(event) {
       currentKnowScrollPosition = window.scrollY;
-      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
+      sendScrollDataToUnity(currentKnowScrollPosition, event.deltaY / 100);
 
       animationFrame = getUnityAnimationFrame();
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
@@ -198,7 +209,7 @@
       else {
         document.body.style.overflow = "scroll";
       }
-    });
+    }
 
     function sendWebGlCanvasInfoToUnityApplication(pageSize, initialPos, canvasWidth, canvasHeight) {
       unityInstance.SendMessage('JsBridge', 'JsGetPageSize', pageSize);
