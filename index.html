@@ -21,7 +21,7 @@
 
   <!-- CANVAS OVERLAY -->
   <div id="canvas-overlay"
-    style="width: 256px; height: 256px; background-color: rgba(10, 62, 120, 1); z-index: 1000; position: absolute; display: inline;">
+    style="width: 256px; height: 256px; background-color: rgba(0, 0, 0, 0); z-index: 1000; position: absolute; display: inline;">
   </div>
 
   <!-- Top Page Content -->
@@ -131,21 +131,24 @@
 
     //MY CONTENT @Pedro
 
-    var headerContent = document.querySelector("#header-content");
-    var footerContent = document.querySelector("#footer-content");
-    var canvasOverlay = document.querySelector("#canvas-overlay");
+    const headerContent = document.querySelector("#header-content");
+    const footerContent = document.querySelector("#footer-content");
+    const canvasOverlay = document.querySelector("#canvas-overlay");
 
     var unityInstance = null;
 
-    var headerContentHeight = headerContent.offsetHeight;
-    var unityContainerWidth = container.offsetWidth;
-    var unityContainerHeight = container.offsetHeight;
+    const headerContentHeight = headerContent.offsetHeight;
+    const unityContainerWidth = container.offsetWidth;
+    const unityContainerHeight = container.offsetHeight;
 
     footerContent.style.paddingTop = unityContainerHeight + "px";
 
     canvasOverlay.style.width = unityContainerWidth + "px";
     canvasOverlay.style.height = unityContainerHeight + "px";
     canvasOverlay.style.top = headerContentHeight + "px";
+
+    const pageWidth  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    const pageHeight = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
 
     //hiden element to receive the current frame of the animation on webgl unity app
     var currentAnimationFrameElement;
@@ -162,7 +165,7 @@
       }).then((uInstance) => {
         unityInstance = uInstance;
         loadingBar.style.display = "none";
-        sendWebGlCanvasInfoToUnityApplication(headerContentHeight, unityContainerWidth, unityContainerHeight);
+        sendWebGlCanvasInfoToUnityApplication(pageHeight, headerContentHeight, unityContainerWidth, unityContainerHeight);
       }).catch((message) => {
         alert(message);
       });
@@ -171,7 +174,6 @@
 
     //INPUT MAP FROM WEBPAGE TO UNITY
     //########################################################################################################
-
     let currentKnowScrollPosition = 0;
     let animationFrame = 0.01;
     let insideOfWebGlCanvas = false;
@@ -184,8 +186,6 @@
 
     document.addEventListener('wheel', (e) => {
       currentKnowScrollPosition = window.scrollY;
-
-      changeWebGlOverlayByScrollPos(currentKnowScrollPosition);
       sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
 
       animationFrame = getUnityAnimationFrame();
@@ -200,10 +200,13 @@
       }
     });
 
-    function sendWebGlCanvasInfoToUnityApplication(initialPos, canvasWidth, canvasHeight) {
+    function sendWebGlCanvasInfoToUnityApplication(pageSize, initialPos, canvasWidth, canvasHeight) {
+      unityInstance.SendMessage('JsBridge', 'JsGetPageSize', pageSize);
       unityInstance.SendMessage('JsBridge', 'JsGetInitialWebGlPosition', initialPos);
       unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasWidth', canvasWidth);
       unityInstance.SendMessage('JsBridge', 'JsGetWebGlCanvasHeight', canvasHeight);
+      //Need to be the last data to be sent to guarantee that other values was already set
+      unityInstance.SendMessage('JsBridge', 'JsWebGlReady');
 
       animationFrame = getUnityAnimationFrame();
     }
@@ -216,15 +219,6 @@
       currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
       return currentAnimationFrameValue;
     }
-
-    function changeWebGlOverlayByScrollPos(scrollPos, animationPos) {
-      let canvasOverlayDistanceFromTopPage = headerContentHeight - scrollPos;
-      canvasOverlay.style.paddingTop = canvasOverlayDistanceFromTopPage + "px";
-
-      let alpha = 1 - scrollPos / headerContentHeight;   
-      canvasOverlay.style.backgroundColor = "rgba(10, 62, 120, " + alpha + ")";
-    }
-
     //########################################################################################################
 
   </script>
