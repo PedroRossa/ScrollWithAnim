@@ -122,7 +122,8 @@
       // config.devicePixelRatio = 1;
 
       //unityShowBanner('WebGL builds are not supported on mobile devices.');
-    } else {
+    }
+    else {
       canvas.style.width = "100%";
       canvas.style.height = "100%";
     }
@@ -193,11 +194,49 @@
       document.addEventListener('wheel', onWheel);
     }
 
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      document.addEventListener("touchstart", touchStart, false);
+      document.addEventListener('touchmove', touchMove, false);
+      document.addEventListener("touchmove", onMobileTouch, false);
+    }
+
+    var start = { x: 0, y: 0 };
+    var offset = { x: 0, y: 0 };
+
+    function touchStart(event) {
+      start.x = event.touches[0].pageX;
+      start.y = event.touches[0].pageY;
+    }
+
+    function touchMove(event) {
+      offset = {};
+
+      offset.x = start.x - event.touches[0].pageX;
+      offset.y = start.y - event.touches[0].pageY;
+
+      return offset;
+    }
 
 
     function onWheel(event) {
       currentKnowScrollPosition = window.scrollY;
       sendScrollDataToUnity(currentKnowScrollPosition, event.deltaY / 100);
+
+      animationFrame = getUnityAnimationFrame();
+      insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
+
+      if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
+        window.scrollTo(0, headerContentHeight);
+        document.body.style.overflow = "hidden";
+      }
+      else {
+        document.body.style.overflow = "scroll";
+      }
+    }
+
+    function onMobileTouch(event) {
+      currentKnowScrollPosition = window.scrollY;
+      sendScrollDataToUnity(currentKnowScrollPosition, offset.y / 100);
 
       animationFrame = getUnityAnimationFrame();
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
