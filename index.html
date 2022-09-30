@@ -179,14 +179,14 @@
     let insideOfWebGlCanvas = false;
 
     function sendScrollDataToUnity(scrollPos, deltaY) {
-      //console.log("[JS] wheel DeltaY: " + deltaY + " ScrollPos: " + scrollPos);
       unityInstance.SendMessage('JsBridge', 'JsScrollPositionChanged', scrollPos);
       unityInstance.SendMessage('JsBridge', 'JsDeltaYChanged', deltaY);
     }
 
-    document.addEventListener('wheel', (e) => {
+
+    document.addEventListener('mousewheel', (e) => {
       currentKnowScrollPosition = window.scrollY;
-      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 10);
+      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
 
       animationFrame = getUnityAnimationFrame();
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
