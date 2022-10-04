@@ -10,8 +10,13 @@
 </head>
 
 <body>
-  <!-- CANVAS OVERLAY -->
-  <div id="canvas-overlay"
+  <div id="debug-panel"
+    style="width: 256px; height: 256px; background-color: rgba(255, 255, 255, 1); z-index: 1000; position: absolute; display: inline; padding-top: 100px;">
+    <p id="var1">var 1</p>
+  </div>
+
+    <!-- CANVAS OVERLAY -->
+    <div id="canvas-overlay"
     style="width: 256px; height: 256px; background-color: rgba(0, 0, 0, 0); z-index: 1000; position: absolute; display: inline;">
   </div>
 
@@ -186,6 +191,14 @@
       document.addEventListener('wheel', onWheel);
     }
 
+
+
+    
+    const debugPanel = document.querySelector("#debug-panel");
+    let var1 = document.querySelector("#var1");
+    
+
+
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
@@ -218,6 +231,10 @@
 
     function onMobileTouch(event) {
       currentKnowScrollPosition = window.scrollY;
+      var1.innerHTML  = currentKnowScrollPosition;
+
+      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
 
@@ -246,14 +263,14 @@
       document.body.style.overflow = "hidden";
       animationRunning = true;
       window.scrollTo(0, headerContentHeight);
-      alert("animation enabled");
+      // alert("animation enabled");
     }
 
     function disableAnimation(newScrollPos) {
       document.body.style.overflow = "scroll";
       animationRunning = false;
       window.scrollTo(0, newScrollPos);
-      alert("animation disabled");
+      // alert("animation disabled");
     }
 
     function sendWebGlCanvasInfoToUnityApplication(pageSize, initialPos, canvasWidth, canvasHeight) {
