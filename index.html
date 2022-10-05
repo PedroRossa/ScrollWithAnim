@@ -203,10 +203,6 @@
       document.addEventListener('wheel', onWheel);
     }
 
-    document.addEventListener('touchmove', function (e) {
-      onTouchMove(e);
-      onMobileTouch(e);
-    });
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
@@ -249,29 +245,9 @@
       var3.innerHTML = "screen: " + screenY + " offSet: " + offsetScreenY;
     }
 
-    function onWheel(e) {
-      currentKnowScrollPosition = window.scrollY;
-      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-
-      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
-
-      insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
-
-      if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
-        window.scrollTo(0, headerContentHeight);
-        document.body.style.overflow = "hidden";
-      }
-      else {
-        document.body.style.overflow = "scroll";
-      }
-
-      animationFrame = getUnityAnimationFrame();
-    }
-
     function onMobileTouch(e) {
       currentKnowScrollPosition = window.scrollY;
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-
 
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
@@ -295,6 +271,25 @@
           }
         }
       }
+    }
+    
+    function onWheel(e) {
+      currentKnowScrollPosition = window.scrollY;
+      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+
+      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
+
+      insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
+
+      if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
+        window.scrollTo(0, headerContentHeight);
+        document.body.style.overflow = "hidden";
+      }
+      else {
+        document.body.style.overflow = "scroll";
+      }
+
+      animationFrame = getUnityAnimationFrame();
     }
 
     function enableAnimation() {
@@ -328,6 +323,7 @@
       currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
       return currentAnimationFrameValue;
     }
+    
     //########################################################################################################
 
   </script>
