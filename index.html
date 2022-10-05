@@ -244,18 +244,16 @@
       offsetScreenY = screenY - e.changedTouches[0].screenY;
 
 
-      var1.innerHTML = "client: " + offsetClientY;
-      var2.innerHTML = "page: " + offsetPageY;
-      var3.innerHTML = "screen: " + offsetScreenY;
+      var1.innerHTML = "client: " + clientY + " offSet: " + offsetClientY;
+      var2.innerHTML = "page: " + pageY + " offSet: " + offsetPageY;
+      var3.innerHTML = "screen: " + screenY + " offSet: " + offsetScreenY;
     }
 
     function onWheel(e) {
       currentKnowScrollPosition = window.scrollY;
-      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
-
-
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      var1.innerHTML = window.scrollY;
+
+      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
@@ -272,17 +270,13 @@
 
     function onMobileTouch(e) {
       currentKnowScrollPosition = window.scrollY;
+      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+
 
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
 
-      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      //var1.innerHTML = "offset:" + touchOffset.y;
-
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
-
-      //var2.innerHTML = "OnCanvas: " + insideOfWebGlCanvas;
-      //var3.innerHTML = "frame: " + animationFrame;
 
       if (!insideOfWebGlCanvas) return;
 
