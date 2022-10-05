@@ -206,7 +206,6 @@
     document.addEventListener('touchmove', function (e) {
       onTouchMove(e);
       onMobileTouch(e);
-      console.log(touchOffset.y);
     });
 
     const debugPanel = document.querySelector("#debug-panel");
@@ -217,21 +216,44 @@
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
+    var clientY;
+    var pageY;
+    var screenY;
+
+
+    var offsetClientY;
+    var offsetPageY;
+    var offsetScreenY;
+
+
     function onTouchStart(e) {
       touchStart.x = e.changedTouches[0].pageX;
       touchStart.y = e.changedTouches[0].pageY;
+
+      clientY = e.changedTouches[0].clientY;
+      pageY = e.changedTouches[0].pageY;
+      screenY = e.changedTouches[0].screenY;
     }
 
     function onTouchMove(e) {
       touchOffset.x = touchStart.x - e.changedTouches[0].pageX;
       touchOffset.y = touchStart.y - e.changedTouches[0].pageY;
+
+      offsetClientY = clientY - e.changedTouches[0].clientY;
+      offsetPageY = pageY - e.changedTouches[0].pageY;
+      offsetScreenY = screenY - e.changedTouches[0].screenY;
+
+
+      var1.innerHTML = "client: " + offsetClientY;
+      var2.innerHTML = "page: " + offsetPageY;
+      var3.innerHTML = "screen: " + offsetScreenY;
     }
 
     function onWheel(e) {
       currentKnowScrollPosition = window.scrollY;
       sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
 
-      
+
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
       var1.innerHTML = window.scrollY;
 
@@ -255,12 +277,12 @@
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
 
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      var1.innerHTML = "offset:" + touchOffset.y;
+      //var1.innerHTML = "offset:" + touchOffset.y;
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
-      var2.innerHTML = "OnCanvas: " + insideOfWebGlCanvas;
-      var3.innerHTML = "frame: " + animationFrame;
+      //var2.innerHTML = "OnCanvas: " + insideOfWebGlCanvas;
+      //var3.innerHTML = "frame: " + animationFrame;
 
       if (!insideOfWebGlCanvas) return;
 
