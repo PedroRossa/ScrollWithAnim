@@ -203,17 +203,18 @@
     var touchOffset = { x: 0, y: 0 };
 
     function onTouchStart(e) {
-      var touch = e.touches[0] || e.changedTouches[0];
+      touchStart.x = e.touches[0].clientX;
+      touchStart.y = e.touches[0].clientY;
 
-      touchStart.x = touch.clientX;
-      touchStart.y = touch.clientY;
+      var1.innerHTML = "start: " + touchStart.y;
     }
 
     function onTouchMove(e) {
-      var touch = e.touches[0] || e.changedTouches[0];
+      touchOffset.x = touchStart.x - e.touches[0].clientX;
+      touchOffset.y = touchStart.y - e.touches[0].clientY;
 
-      touchOffset.x = touchStart.x - touch.clientX;
-      touchOffset.y = touchStart.y - touch.clientY;
+      
+      var2.innerHTML = "offset: " + touchOffset.y;
     }
 
 
@@ -223,8 +224,6 @@
 
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
-
-      var1.innerHTML = "offset: " + touchOffset.y;
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
