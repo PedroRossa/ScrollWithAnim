@@ -192,21 +192,22 @@
     //   document.addEventListener('wheel', onWheel);
     // }
 
-    document.addEventListener('touchstart', function (e) {
-      onTouchStart(e);
-      console.log("Touch Start", e.changedTouches[0].pageY);
-    });
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      document.addEventListener('touchstart', onTouchStart);
+      document.addEventListener('touchmove', onTouchMove);
+      document.addEventListener('touchmove', onMobileTouch);
+    }
+    else {
+      document.addEventListener('wheel', onWheel);
+    }
+
+
 
     document.addEventListener('touchmove', function (e) {
       onTouchMove(e);
       onMobileTouch(e);
       console.log(touchOffset.y);
     });
-
-    // document.addEventListener('touchend', function (e) {
-    //   var1.innerHTML = window.scrollY;
-    //   debugPanel.style.paddingTop = window.scrollY + "px";
-    // });
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
@@ -228,6 +229,10 @@
       currentKnowScrollPosition = window.scrollY;
       sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
 
+      
+      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+      var1.innerHTML = window.scrollY;
+
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
       if (insideOfWebGlCanvas && animationFrame > 0 && animationFrame < 1) {
@@ -244,11 +249,11 @@
     function onMobileTouch(e) {
       currentKnowScrollPosition = window.scrollY;
 
-      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      var1.innerHTML = window.scrollY;
-
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
+
+      debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+      var1.innerHTML = window.scrollY;
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
