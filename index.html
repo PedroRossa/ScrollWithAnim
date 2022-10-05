@@ -185,14 +185,19 @@
 
     // //TODO SOLVE THIS IN A BETTER AND MORE COMPRHENSIVE WAY
     // //It's almost working on mobile
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      document.addEventListener("touchstart", onTouchStart, false);
-      document.addEventListener('touchmove', onTouchMove, false);
-      document.addEventListener("touchmove", onMobileTouch, false);
-    }
-    else {
-      document.addEventListener('wheel', onWheel);
-    }
+    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    //   document.addEventListener("touchstart", onTouchStart, false);
+    //   document.addEventListener('touchmove', onTouchMove, false);
+    //   document.addEventListener("touchmove", onMobileTouch, false);
+    // }
+    // else {
+    //   document.addEventListener('wheel', onWheel);
+    // }
+
+    
+    document.addEventListener("touchstart", onTouchStart, false);
+    document.addEventListener('touchmove', onTouchMove, false);
+      // document.addEventListener("touchmove", onMobileTouch, false);
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
