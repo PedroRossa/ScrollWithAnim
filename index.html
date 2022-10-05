@@ -197,7 +197,6 @@
     
     document.addEventListener("touchstart", onTouchStart, false);
     document.addEventListener('touchmove', onTouchMove, false);
-    document.addEventListener("touchmove", onMobileTouch, false);
     document.addEventListener('wheel', onWheel);
 
     const debugPanel = document.querySelector("#debug-panel");
@@ -221,6 +220,7 @@
 
       
       var2.innerHTML = "offset: " + touchOffset.y;
+      onMobileTouch(e);
     }
 
 
