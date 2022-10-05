@@ -197,6 +197,8 @@
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       document.addEventListener('touchstart', onTouchStart);
       document.addEventListener('touchmove', onTouchMove);
+      document.addEventListener('touchend', OnTouchEnd);
+      
       document.addEventListener('touchmove', onMobileTouch);
     }
     else {
@@ -212,14 +214,9 @@
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
-    var clientY;
-    var pageY;
-    var screenY;
-
-
-    var offsetClientY;
-    var offsetPageY;
-    var offsetScreenY;
+    var A = 0;
+    var B = 0;
+    var gotcha = false;
 
 
     function onTouchStart(e) {
@@ -232,17 +229,24 @@
     }
 
     function onTouchMove(e) {
+
+      if (!gotcha) {
+        gotcha = true;
+        A = e.changedTouches[0].pageY;
+        return;
+      }
+
+      B = A - e.changedTouches[0].pageY;
+
       touchOffset.x = touchStart.x - e.changedTouches[0].pageX;
       touchOffset.y = touchStart.y - e.changedTouches[0].pageY;
 
-      offsetClientY = clientY - e.changedTouches[0].clientY;
-      offsetPageY = pageY - e.changedTouches[0].pageY;
-      offsetScreenY = screenY - e.changedTouches[0].screenY;
 
+      var1.innerHTML = "page: " + A + " offSet: " + B;
+    }
 
-      var1.innerHTML = "client: " + clientY + " offSet: " + offsetClientY;
-      var2.innerHTML = "page: " + pageY + " offSet: " + offsetPageY;
-      var3.innerHTML = "screen: " + screenY + " offSet: " + offsetScreenY;
+    function OnTouchEnd(e) {
+      gotcha = false;
     }
 
     function onMobileTouch(e) {
@@ -272,7 +276,7 @@
         }
       }
     }
-    
+
     function onWheel(e) {
       currentKnowScrollPosition = window.scrollY;
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
@@ -323,7 +327,7 @@
       currentAnimationFrameValue = currentAnimationFrameElement.getAttribute("current-frame");
       return currentAnimationFrameValue;
     }
-    
+
     //########################################################################################################
 
   </script>
