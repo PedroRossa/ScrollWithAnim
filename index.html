@@ -197,7 +197,8 @@
     
     document.addEventListener("touchstart", onTouchStart, false);
     document.addEventListener('touchmove', onTouchMove, false);
-      // document.addEventListener("touchmove", onMobileTouch, false);
+    document.addEventListener("touchmove", onMobileTouch, false);
+    document.addEventListener('wheel', onWheel);
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
