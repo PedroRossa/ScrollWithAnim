@@ -185,14 +185,14 @@
 
     // //TODO SOLVE THIS IN A BETTER AND MORE COMPRHENSIVE WAY
     // //It's almost working on mobile
-    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    //   document.addEventListener("touchstart", onTouchStart, false);
-    //   document.addEventListener('touchmove', onTouchMove, false);
-    //   document.addEventListener("touchmove", onMobileTouch, false);
-    // }
-    // else {
-    //   document.addEventListener('wheel', onWheel);
-    // }
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      document.addEventListener("touchstart", onTouchStart, false);
+      document.addEventListener('touchmove', onTouchMove, false);
+      document.addEventListener("touchmove", onMobileTouch, false);
+    }
+    else {
+      document.addEventListener('wheel', onWheel);
+    }
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
@@ -202,70 +202,18 @@
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
-
-    document.addEventListener('touchstart', handleTouchStart, false);
-    document.addEventListener('touchmove', handleTouchMove, false);
-
-    var xDown = null;
-    var yDown = null;
-
-    function handleTouchStart(evt) {
-      xDown = evt.touches[0].clientX;
-      yDown = evt.touches[0].clientY;
-    };
-
-    function handleTouchMove(evt) {
-      if (!xDown || !yDown) {
-        return;
-      }
-
-      debugPanel.style.paddingTop = window.scrollY + "px";
-
-      var xUp = evt.touches[0].clientX;
-      var yUp = evt.touches[0].clientY;
-
-      var xDiff = xDown - xUp;
-      var yDiff = yDown - yUp;
-
-      if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
-        if (xDiff > 0) {
-          /* left swipe */
-        } else {
-          /* right swipe */
-        }
-      } else {
-        
-        var1.innerHTML = yDiff;
-        if (yDiff > 0) {
-          /* up swipe */
-          console.log("up")
-        } else {
-          /* down swipe */
-          console.log("down")
-        }
-      }
-      /* reset values */
-      xDown = null;
-      yDown = null;
-    };
-
-
-
-
-
-
     function onTouchStart(e) {
-      var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+      var touch = e.touches[0] || e.changedTouches[0];
 
-      touchStart.x = touch.pageX;
-      touchStart.y = touch.pageY;
+      touchStart.x = touch.clientX;
+      touchStart.y = touch.clientY;
     }
 
     function onTouchMove(e) {
-      var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+      var touch = e.touches[0] || e.changedTouches[0];
 
-      touchOffset.x = touchStart.x - touch.pageX;
-      touchOffset.y = touchStart.y - touch.pageY;
+      touchOffset.x = touchStart.x - touch.clientX;
+      touchOffset.y = touchStart.y - touch.clientY;
     }
 
 
