@@ -255,7 +255,7 @@
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
 
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      var1.innerHTML = "scrollPos:" + window.scrollY;
+      var1.innerHTML = "offset:" + touchOffset.y;
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
