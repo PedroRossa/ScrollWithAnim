@@ -193,43 +193,40 @@
     // }
 
     document.addEventListener('touchstart', function (e) {
-      console.log("Touch Start");
+      onTouchStart(e);
+      console.log("Touch Start", e.changedTouches[0].pageY);
     });
 
     document.addEventListener('touchmove', function (e) {
-      var1.innerHTML = window.scrollY;
-      debugPanel.style.paddingTop = window.scrollY + "px";
-      console.log("Touch Move");
+      onTouchMove(e);
+      onMobileTouch(e);
+      console.log(touchOffset.y);
     });
 
-    document.addEventListener('touchend', function (e) {
-      var1.innerHTML = window.scrollY;
-      debugPanel.style.paddingTop = window.scrollY + "px";
-      console.log("Touch End");
-    });
-
+    // document.addEventListener('touchend', function (e) {
+    //   var1.innerHTML = window.scrollY;
+    //   debugPanel.style.paddingTop = window.scrollY + "px";
+    // });
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
 
-
-
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
-    function onTouchStart(event) {
-      touchStart.x = event.touches[0].pageX;
-      touchStart.y = event.touches[0].pageY;
+    function onTouchStart(e) {
+      touchStart.x = e.changedTouches[0].pageX;
+      touchStart.y = e.changedTouches[0].pageY;
     }
 
-    function onTouchMove(event) {
-      touchOffset.x = touchStart.x - event.touches[0].pageX;
-      touchOffset.y = touchStart.y - event.touches[0].pageY;
+    function onTouchMove(e) {
+      touchOffset.x = touchStart.x - e.changedTouches[0].pageX;
+      touchOffset.y = touchStart.y - e.changedTouches[0].pageY;
     }
 
-    function onWheel(event) {
+    function onWheel(e) {
       currentKnowScrollPosition = window.scrollY;
-      sendScrollDataToUnity(currentKnowScrollPosition, event.deltaY / 100);
+      sendScrollDataToUnity(currentKnowScrollPosition, e.deltaY / 100);
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
 
@@ -244,11 +241,11 @@
       animationFrame = getUnityAnimationFrame();
     }
 
-    function onMobileTouch(event) {
+    function onMobileTouch(e) {
       currentKnowScrollPosition = window.scrollY;
-      var1.innerHTML = currentKnowScrollPosition;
 
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
+      var1.innerHTML = window.scrollY;
 
       let scrollingDown = touchOffset.y < 0 ? true : false;
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
