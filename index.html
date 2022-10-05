@@ -7,16 +7,17 @@
   <title>Red Bull Awesome Web Experience</title>
   <link rel="shortcut icon" href="TemplateData/redbullLogo.ico">
   <link rel="stylesheet" href="TemplateData/style.css">
+  <script src="https://hammerjs.github.io/dist/hammer.js"></script>
 </head>
 
 <body>
   <div id="debug-panel"
-    style="width: 256px; height: 256px; background-color: rgba(255, 255, 255, 1); z-index: 1000; position: absolute; display: inline; padding-top: 100px;">
+    style="width: 256px; height: 128px; background-color: rgba(255, 255, 255, 1); z-index: 1000; position: absolute; display: inline; padding-top: 100px;">
     <p id="var1">var 1</p>
   </div>
 
-    <!-- CANVAS OVERLAY -->
-    <div id="canvas-overlay"
+  <!-- CANVAS OVERLAY -->
+  <div id="canvas-overlay"
     style="width: 256px; height: 256px; background-color: rgba(0, 0, 0, 0); z-index: 1000; position: absolute; display: inline;">
   </div>
 
@@ -180,23 +181,37 @@
       unityInstance.SendMessage('JsBridge', 'JsDeltaYChanged', deltaY);
     }
 
-    //TODO SOLVE THIS IN A BETTER AND MORE COMPRHENSIVE WAY
-    //It's almost working on mobile
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      document.addEventListener("touchstart", onTouchStart, false);
-      document.addEventListener('touchmove', onTouchMove, false);
-      document.addEventListener("touchmove", onMobileTouch, false);
-    }
-    else {
-      document.addEventListener('wheel', onWheel);
-    }
+    // //TODO SOLVE THIS IN A BETTER AND MORE COMPRHENSIVE WAY
+    // //It's almost working on mobile
+    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    //   document.addEventListener("touchstart", onTouchStart, false);
+    //   document.addEventListener('touchmove', onTouchMove, false);
+    //   document.addEventListener("touchmove", onMobileTouch, false);
+    // }
+    // else {
+    //   document.addEventListener('wheel', onWheel);
+    // }
+
+    document.addEventListener('touchstart', function (e) {
+      console.log("Touch Start");
+    });
+
+    document.addEventListener('touchmove', function (e) {
+      var1.innerHTML = window.scrollY;
+      debugPanel.style.paddingTop = window.scrollY + "px";
+      console.log("Touch Move");
+    });
+
+    document.addEventListener('touchend', function (e) {
+      var1.innerHTML = window.scrollY;
+      debugPanel.style.paddingTop = window.scrollY + "px";
+      console.log("Touch End");
+    });
 
 
-
-    
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
-    
+
 
 
     var touchStart = { x: 0, y: 0 };
@@ -231,7 +246,7 @@
 
     function onMobileTouch(event) {
       currentKnowScrollPosition = window.scrollY;
-      var1.innerHTML  = currentKnowScrollPosition;
+      var1.innerHTML = currentKnowScrollPosition;
 
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
 
