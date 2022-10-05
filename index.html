@@ -14,6 +14,8 @@
   <div id="debug-panel"
     style="width: 256px; height: 128px; background-color: rgba(255, 255, 255, 1); z-index: 1000; position: absolute; display: inline; padding-top: 100px;">
     <p id="var1">var 1</p>
+    <p id="var2">var 2</p>
+    <p id="var3">var 3</p>
   </div>
 
   <!-- CANVAS OVERLAY -->
@@ -201,8 +203,6 @@
       document.addEventListener('wheel', onWheel);
     }
 
-
-
     document.addEventListener('touchmove', function (e) {
       onTouchMove(e);
       onMobileTouch(e);
@@ -211,6 +211,8 @@
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
+    let var2 = document.querySelector("#var2");
+    let var3 = document.querySelector("#var3");
 
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
@@ -253,9 +255,12 @@
       sendScrollDataToUnity(currentKnowScrollPosition, touchOffset.y / 100);
 
       debugPanel.style.paddingTop = currentKnowScrollPosition + "px";
-      var1.innerHTML = window.scrollY;
+      var1.innerHTML = "scrollPos:" + window.scrollY;
 
       insideOfWebGlCanvas = currentKnowScrollPosition >= headerContentHeight && currentKnowScrollPosition <= (headerContentHeight + unityContainerHeight);
+
+      var2.innerHTML = "OnCanvas: " + insideOfWebGlCanvas;
+      var3.innerHTML = "frame: " + animationFrame;
 
       if (!insideOfWebGlCanvas) return;
 
