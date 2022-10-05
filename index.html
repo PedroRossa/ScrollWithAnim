@@ -194,17 +194,68 @@
     //   document.addEventListener('wheel', onWheel);
     // }
 
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      document.addEventListener('touchstart', onTouchStart);
-      document.addEventListener('touchmove', onTouchMove);
-      document.addEventListener('touchend', OnTouchEnd);
-      
-      document.addEventListener('touchmove', onMobileTouch);
-    }
-    else {
-      document.addEventListener('wheel', onWheel);
+    // if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    //   document.addEventListener('touchstart', onTouchStart);
+    //   document.addEventListener('mousemove', onTouchMove);
+    //   document.addEventListener('touchend', OnTouchEnd);
+
+    //   document.addEventListener('mousemove', onMobileTouch);
+    // }
+    // else {
+    //   document.addEventListener('wheel', onWheel);
+    // }
+
+
+    // Add the event listeners for mousedown, mousemove, and mouseup
+    document.addEventListener('mousedown', (e) => {
+
+      console.log("mousedown")
+      A = e.offsetY;
+      gotcha = true;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+
+      console.log("mousemove")
+      if (gotcha) {
+        B = A - e.offsetY;
+        console.log(B)
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+
+      console.log("mouseup")
+      if (gotcha) {
+        A = 0;
+        gotcha = false;
+      }
+    });
+
+var vvv = 0;
+    function handler(event) {
+      if (vvv == 0) {
+        var1.innerHTML = event.type;
+      }
+      if (vvv == 1) {
+        var2.innerHTML = event.type;
+      }
+      if (vvv == 2) {
+        var3.innerHTML = event.type;
+      }
+      vvv++;
+      if(vvv == 3) vvv=0;
     }
 
+    document.addEventListener('mouseenter', handler);
+    document.addEventListener('mouseleave', handler);
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('mouseup', handler);
+    document.addEventListener('click', handler);
+    document.addEventListener('focus', handler);
+    document.addEventListener('blur', handler);
+    document.addEventListener('touchstart', handler);
+    document.addEventListener('touchend', handler);
 
     const debugPanel = document.querySelector("#debug-panel");
     let var1 = document.querySelector("#var1");
@@ -222,10 +273,6 @@
     function onTouchStart(e) {
       touchStart.x = e.changedTouches[0].pageX;
       touchStart.y = e.changedTouches[0].pageY;
-
-      clientY = e.changedTouches[0].clientY;
-      pageY = e.changedTouches[0].pageY;
-      screenY = e.changedTouches[0].screenY;
     }
 
     function onTouchMove(e) {
