@@ -209,6 +209,7 @@
     let animationIsRunning = false;
     let currentAnimationPosition = 0;
     let currentAnimState = 0;
+    let pageFixedToAnim = false;
 
     function refreshCanvas(scrollDeltaY) {
       scrollPos = window.scrollY;
@@ -229,6 +230,15 @@
       if (!animationIsRunning) {
         fixPageOnAnimatedCanvas();
         animationIsRunning = true;
+        return;
+      }
+
+
+      //going to footer And animation already finished
+      if (currentAnimState == 1 && scrollDeltaY > 0) {
+        if (pageFixedToAnim) {
+          releasePageFromAnimatedCanvas(true);
+        }
         return;
       }
 
@@ -270,6 +280,7 @@
       //stack window position at the canvas element
       window.scrollTo(0, headerContentHeight);
       document.body.style.overflow = "hidden";
+      pageFixedToAnim = true;
 
       var3.innerHTML = "animation is Running!";
     }
@@ -279,6 +290,7 @@
       currentAnimationPosition = scrollingDown ? 1 : 0
       U_setAnimationPosition(currentAnimationPosition);
       document.body.style.overflow = "scroll";
+      pageFixedToAnim = false;
 
       var3.innerHTML = "animation Stoped!";
     }
