@@ -208,37 +208,33 @@
     let isAfterCanvasBeginPos = false;
     let animationIsRunning = false;
     let currentAnimationPosition = 0;
-    let currentAnimState = 0;
-    let pageFixedToAnim = false;
+    let currentAnimState = -1;
 
     function refreshCanvas(scrollDeltaY) {
       scrollPos = window.scrollY;
       debugPanel.style.paddingTop = scrollPos + "px";
 
       isAfterCanvasBeginPos = scrollPos >= headerContentHeight;
+      isAfterCanvasEndPos = scrollPos >= (headerContentHeight + (unityContainerHeight / 4));
 
       //Not on canvas yet
       if (!isAfterCanvasBeginPos) {
         if (animationIsRunning) {
-          animationIsRunning = false;
           releasePageFromAnimatedCanvas(false);
         }
         return;
       }
 
-      //achived the canvas and will set animation data to start to change by wheel/touch movement
-      if (!animationIsRunning) {
-        fixPageOnAnimatedCanvas();
-        animationIsRunning = true;
+      if (isAfterCanvasEndPos) {
+        if (animationIsRunning) {
+          releasePageFromAnimatedCanvas(true);
+        }
         return;
       }
 
-
-      //going to footer And animation already finished
-      if (currentAnimState == 1 && scrollDeltaY > 0) {
-        if (pageFixedToAnim) {
-          releasePageFromAnimatedCanvas(true);
-        }
+      //achived the canvas and will set animation data to start to change by wheel/touch movement
+      if (!animationIsRunning && currentAnimState < 1) {
+        fixPageOnAnimatedCanvas();
         return;
       }
 
@@ -249,13 +245,11 @@
       switch (currentAnimState) {
         case -1: //finished from bottom to top direction
           releasePageFromAnimatedCanvas(false);
-          animationIsRunning = false;
           break;
         case 0: //not finished
           break;
         case 1: //finished from top to bottom direction
           releasePageFromAnimatedCanvas(true);
-          animationIsRunning = false;
           break;
       }
     }
@@ -280,7 +274,7 @@
       //stack window position at the canvas element
       window.scrollTo(0, headerContentHeight);
       document.body.style.overflow = "hidden";
-      pageFixedToAnim = true;
+      animationIsRunning = true;
 
       var3.innerHTML = "animation is Running!";
     }
@@ -290,7 +284,7 @@
       currentAnimationPosition = scrollingDown ? 1 : 0
       U_setAnimationPosition(currentAnimationPosition);
       document.body.style.overflow = "scroll";
-      pageFixedToAnim = false;
+      animationIsRunning = false;
 
       var3.innerHTML = "animation Stoped!";
     }
