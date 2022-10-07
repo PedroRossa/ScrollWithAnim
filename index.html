@@ -193,13 +193,12 @@
     function onTouchStart(e) {
       touchStart.x = e.touches[0].clientX;
       touchStart.y = e.touches[0].clientY;
-      var1.innerHTML = "start: " + touchStart.y;
     }
 
     function onTouchMove(e) {
       touchOffset.x = touchStart.x - e.touches[0].clientX;
       touchOffset.y = touchStart.y - e.touches[0].clientY;
-      var2.innerHTML = "offset: " + touchOffset.y;
+      var1.innerHTML = "offset: " + touchOffset.y;
     }
 
     function onMobileTouch(e) {
@@ -238,8 +237,13 @@
           }
         }
         //Force the canvas position!
-        if(window.scrollY != headerContentHeight){
-          window.scrollTo(0, headerContentHeight);
+        if (window.scrollY != headerContentHeight) {
+          //window.scrollTo(0, headerContentHeight);
+          window.scrollTo({
+            left: 0,
+            top: headerContentHeight,
+            behavior: 'auto'
+          });
         }
 
         currentAnimState = updateAnimation(scrollDeltaY);
@@ -272,7 +276,12 @@
 
     function fixPageOnAnimatedCanvas(fixPosition) {
       //stack window position at the canvas element
-      window.scrollTo(0, fixPosition);
+      //window.scrollTo(0, fixPosition);
+      window.scrollTo({
+        left: 0,
+        top: fixPosition,
+        behavior: 'auto'
+      });
       document.body.style.overflow = "hidden";
       animationIsRunning = true;
 
@@ -285,8 +294,12 @@
       U_setAnimationPosition(currentAnimationPosition);
       document.body.style.overflow = "scroll";
       animationIsRunning = false;
-      window.scrollTo(0, newWindowPos);
-
+      //window.scrollTo(0, newWindowPos);
+      window.scrollTo({
+        left: 0,
+        top: newWindowPos,
+        behavior: 'auto'
+      });
       var3.innerHTML = "animation Stoped!";
     }
 
