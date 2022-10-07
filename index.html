@@ -239,7 +239,7 @@
         }
         //Force the canvas position!
         if(window.scrollY != headerContentHeight){
-          window.moveTo(0, headerContentHeight);
+          window.scrollTo(0, headerContentHeight);
         }
 
         currentAnimState = updateAnimation(scrollDeltaY);
@@ -272,7 +272,7 @@
 
     function fixPageOnAnimatedCanvas(fixPosition) {
       //stack window position at the canvas element
-      window.moveTo(0, fixPosition);
+      window.scrollTo(0, fixPosition);
       document.body.style.overflow = "hidden";
       animationIsRunning = true;
 
@@ -285,7 +285,7 @@
       U_setAnimationPosition(currentAnimationPosition);
       document.body.style.overflow = "scroll";
       animationIsRunning = false;
-      window.moveTo(0, newWindowPos);
+      window.scrollTo(0, newWindowPos);
 
       var3.innerHTML = "animation Stoped!";
     }
