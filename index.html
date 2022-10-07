@@ -7,7 +7,6 @@
   <title>Red Bull Awesome Web Experience</title>
   <link rel="shortcut icon" href="TemplateData/redbullLogo.ico">
   <link rel="stylesheet" href="TemplateData/style.css">
-  <script defer src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"></script>
 </head>
 
 <body>
@@ -237,13 +236,8 @@
           }
         }
         //Force the canvas position!
-        if (window.scrollY != headerContentHeight) {
-          //window.scrollTo(0, headerContentHeight);
-          window.scrollTo({
-            left: 0,
-            top: headerContentHeight,
-            behavior: 'auto'
-          });
+        if (window.scrollTop != headerContentHeight) {
+          window.scrollTop = headerContentHeight;
         }
 
         currentAnimState = updateAnimation(scrollDeltaY);
@@ -277,11 +271,8 @@
     function fixPageOnAnimatedCanvas(fixPosition) {
       //stack window position at the canvas element
       //window.scrollTo(0, fixPosition);
-      window.scrollTo({
-        left: 0,
-        top: fixPosition,
-        behavior: 'auto'
-      });
+      window.scrollTop = fixPosition;
+      
       document.body.style.overflow = "hidden";
       animationIsRunning = true;
 
@@ -295,12 +286,8 @@
       document.body.style.overflow = "scroll";
       animationIsRunning = false;
       //window.scrollTo(0, newWindowPos);
-      window.scrollTo({
-        left: 0,
-        top: newWindowPos,
-        behavior: 'auto'
-      });
-      var3.innerHTML = "animation Stoped!";
+          window.scrollTop = newWindowPos;
+    
     }
 
     function U_sendWebGlCanvasInfo(pageSize, initialPos, canvasWidth, canvasHeight) {
