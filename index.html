@@ -183,6 +183,13 @@
     var touchStart = { x: 0, y: 0 };
     var touchOffset = { x: 0, y: 0 };
 
+    const canvasOffsetToTouch = unityContainerHeight / 16;
+    const canvasOffsetToWheel = unityContainerHeight / 4;
+
+    let animationIsRunning = false;
+    let currentAnimationPosition = 0;
+    let currentAnimState = -1;
+
     function onTouchStart(e) {
       touchStart.x = e.touches[0].clientX;
       touchStart.y = e.touches[0].clientY;
@@ -197,63 +204,56 @@
 
     function onMobileTouch(e) {
       U_sendScrollDataToUnity(window.scrollY, touchOffset.y / 100);
-      refreshCanvas(touchOffset.y);
+      refreshCanvas(touchOffset.y, canvasOffsetToTouch);
     }
 
     function onWheel(e) {
       U_sendScrollDataToUnity(window.scrollY, e.deltaY / 100);
-      refreshCanvas(e.deltaY);
+      refreshCanvas(e.deltaY, canvasOffsetToWheel);
     }
 
-    let isAfterCanvasBeginPos = false;
-    let animationIsRunning = false;
-    let currentAnimationPosition = 0;
-    let currentAnimState = -1;
 
-    function refreshCanvas(scrollDeltaY) {
+
+    function refreshCanvas(scrollDeltaY, canvasOffset) {
       scrollPos = window.scrollY;
-      debugPanel.style.paddingTop = scrollPos + "px";
+      debugPanel.style.paddingTop = scrollPos + 60 + "px";
 
-      isAfterCanvasBeginPos = scrollPos >= headerContentHeight;
-      isAfterCanvasEndPos = scrollPos >= (headerContentHeight + (unityContainerHeight / 4));
+      let scrollingDown = scrollDeltaY > 0;
+      let isOnCanvasRegion = scrollPos > (headerContentHeight - canvasOffset) && scrollPos < (headerContentHeight + canvasOffset);
 
-      //Not on canvas yet
-      if (!isAfterCanvasBeginPos) {
-        if (animationIsRunning) {
-          releasePageFromAnimatedCanvas(false);
+      if (isOnCanvasRegion) {
+        var2.innerHTML = "Canvas Region";
+
+        if (!animationIsRunning) {
+          if (scrollingDown) {
+            if (currentAnimationPosition < 1) {
+              fixPageOnAnimatedCanvas(headerContentHeight);
+              return;
+            }
+          } else {
+            if (currentAnimationPosition > 0) {
+              fixPageOnAnimatedCanvas(headerContentHeight);
+              return;
+            }
+          }
         }
-        return;
-      }
-
-      if (isAfterCanvasEndPos) {
-        if (animationIsRunning) {
-          releasePageFromAnimatedCanvas(true);
+        //Force the canvas position!
+        if(window.scrollY != headerContentHeight){
+          window.scrollTo(0, headerContentHeight);
         }
-        return;
-      }
 
-      //achived the canvas and will set animation data to start to change by wheel/touch movement
-      if (!animationIsRunning && currentAnimState < 1) {
-        fixPageOnAnimatedCanvas();
-        return;
-      }
-
-      if (animationIsRunning) {
         currentAnimState = updateAnimation(scrollDeltaY);
+
+        if (scrollingDown && currentAnimState == 1) {
+          releasePageFromAnimatedCanvas(true, headerContentHeight + canvasOffset);
+        } else if (!scrollingDown && currentAnimState == -1) {
+          releasePageFromAnimatedCanvas(false, headerContentHeight - canvasOffset);
+        }
+        return;
       }
 
-      switch (currentAnimState) {
-        case -1: //finished from bottom to top direction
-          releasePageFromAnimatedCanvas(false);
-          break;
-        case 0: //not finished
-          break;
-        case 1: //finished from top to bottom direction
-          releasePageFromAnimatedCanvas(true);
-          break;
-      }
+      var2.innerHTML = "Webpage Region";
     }
-
 
     //return 1 to animation finished topDown, -1 finished downTop and 0 if not finished yet
     function updateAnimation(scrollDeltaY) {
@@ -270,21 +270,22 @@
       return Math.min(Math.max(0, value), 1);
     }
 
-    function fixPageOnAnimatedCanvas() {
+    function fixPageOnAnimatedCanvas(fixPosition) {
       //stack window position at the canvas element
-      window.scrollTo(0, headerContentHeight);
+      window.scrollTo(0, fixPosition);
       document.body.style.overflow = "hidden";
       animationIsRunning = true;
 
       var3.innerHTML = "animation is Running!";
     }
 
-    function releasePageFromAnimatedCanvas(scrollingDown) {
+    function releasePageFromAnimatedCanvas(scrollingDown, newWindowPos) {
       //if scrolling down, indicates that the animation finished, else, it's back to the top page
       currentAnimationPosition = scrollingDown ? 1 : 0
       U_setAnimationPosition(currentAnimationPosition);
       document.body.style.overflow = "scroll";
       animationIsRunning = false;
+      window.scrollTo(0, newWindowPos);
 
       var3.innerHTML = "animation Stoped!";
     }
