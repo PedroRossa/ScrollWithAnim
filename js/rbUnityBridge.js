@@ -1,7 +1,3 @@
-const stringType = "string";
-const booleanType = "boolean";
-const numberType = "number";
-
 const pageWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 const pageHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -20,9 +16,9 @@ function U_sendScrollDataToUnity(scrollPos, deltaY) {
 }
 
 function U_sendFloatValue(propertyName, value) {
-    var valueToSend = propertyName + ":" + value;
+    var valueToSend = propertyName + ':' + value;
 
-    if (typeof value != numberType) {
+    if (typeof value != "number") {
         console.error("You are trying to send a value that is not a number.");
         return;
     }
@@ -30,10 +26,21 @@ function U_sendFloatValue(propertyName, value) {
     unityInstance.SendMessage('JsBridge', 'JsReceiveFloatValue', valueToSend);
 }
 
-function U_sendStringValue(propertyName, value) {
-    var valueToSend = propertyName + ":" + value;
+function U_sendIntValue(propertyName, value) {
+    var valueToSend = propertyName + ':' + value;
 
-    if (typeof value != stringType) {
+    if (typeof value != "number") {
+        console.error("You are trying to send a value that is not a number.");
+        return;
+    }
+
+    unityInstance.SendMessage('JsBridge', 'JsReceiveIntValue', valueToSend);
+}
+
+function U_sendStringValue(propertyName, value) {
+    var valueToSend = propertyName + ':' + value;
+
+    if (typeof value != "string") {
         console.error("You are trying to send a value that is not a string.");
         return;
     }
@@ -42,9 +49,9 @@ function U_sendStringValue(propertyName, value) {
 }
 
 function U_sendBooleanValue(propertyName, value) {
-    var valueToSend = propertyName + ":" + value;
+    var valueToSend = propertyName + ':' + value;
 
-    if (typeof value != booleanType) {
+    if (typeof value != "boolean") {
         console.error("You are trying to send a value that is not a boolean.");
         return;
     }

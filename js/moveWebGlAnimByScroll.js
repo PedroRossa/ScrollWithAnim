@@ -13,15 +13,17 @@ canvasOverlay.style.height = unityContainerHeight + "px";
 canvasOverlay.style.top = headerContentHeight + "px";
 
 //for mobile
-document.addEventListener("touchstart", onTouchStart, false);
-document.addEventListener('touchmove', onTouchMove, false);
-document.addEventListener('touchmove', onMobileTouch, false);
+document.addEventListener("touchstart", onTouchStart, {passive:true});
+document.addEventListener('touchmove', onTouchMove, {passive:true});
+document.addEventListener('touchmove', onMobileTouch, {passive:true});
 
 //for desktop
 document.addEventListener('wheel', onWheel, false);
 
 const canvasOffsetToTouch = unityContainerHeight / 16;
 const canvasOffsetToWheel = unityContainerHeight / 4;
+
+const animateToPosParameter = "AnimateToPosition";
 
 let animationIsRunning = false;
 let currentAnimationPosition = 0;
@@ -97,10 +99,10 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
 function updateAnimation(scrollDeltaY) {
     currentAnimationPosition += scrollDeltaY / 8001;
     currentAnimationPosition = clamp01(currentAnimationPosition);
-    ///The position need to be normalized between 0 - 1
-    U_sendFloatValue("animationPosition", currentAnimationPosition);
-    
 
+    ///The position need to be normalized between 0 - 1
+    U_sendFloatValue(animateToPosParameter, currentAnimationPosition);
+    
     if (currentAnimationPosition >= 1) return 1;
     else if (currentAnimationPosition <= 0) return -1;
     else return 0;
@@ -119,7 +121,7 @@ function fixPageOnAnimatedCanvas(fixPosition) {
 function releasePageFromAnimatedCanvas(scrollingDown, newWindowPos) {
     //if scrolling down, indicates that the animation finished, else, it's back to the top page
     currentAnimationPosition = scrollingDown ? 1 : 0
-    U_sendFloatValue("animationPosition", currentAnimationPosition);
+    U_sendFloatValue(animateToPosParameter, currentAnimationPosition);
     document.body.style.overflow = "scroll";
     animationIsRunning = false;
     scrollWindowsToNewPos(0, newWindowPos);

@@ -1,7 +1,6 @@
 function scrollWindowsToNewPos(x, y) {
     window.scrollTo({ left: x, top: y, behavior: "auto" });
-    setTimeout(() => { window.scrollTo({ left: x, top: y, behavior: "auto" }); }, 100);
-    document.documentElement.scrollTop = document.body.scrollTop = y;
+    setTimeout(() => { window.scrollTo({ left: x, top: y, behavior: "auto" }); }, 100);    
 }
 
 function clamp01(value) {
