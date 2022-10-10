@@ -266,8 +266,9 @@
     }
 
     function scrollWindowsToNewPos(x, y) {
-      window.scrollTo(x, y);
-      setTimeout(() => { window.scrollTo(x, y); }, 100);
+      //window.scrollTo({left:x, top:y, behavior:"auto"});
+      //setTimeout(() => { window.scrollTo({left:x, top:y, behavior:"auto"});  }, 100);
+      document.documentElement.scrollTop = document.body.scrollTop = y;
     }
 
     function clamp01(value) {
