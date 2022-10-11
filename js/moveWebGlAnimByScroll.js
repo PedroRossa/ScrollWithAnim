@@ -13,9 +13,9 @@ canvasOverlay.style.height = unityContainerHeight + "px";
 canvasOverlay.style.top = headerContentHeight + "px";
 
 //for mobile
-document.addEventListener("touchstart", onTouchStart, {passive:true});
-document.addEventListener('touchmove', onTouchMove, {passive:true});
-document.addEventListener('touchmove', onMobileTouch, {passive:true});
+document.addEventListener("touchstart", onTouchStart, {passive:false});
+document.addEventListener('touchmove', onTouchMove, {passive:false});
+document.addEventListener('touchmove', onMobileTouch, {passive:false});
 
 //for desktop
 document.addEventListener('wheel', onWheel, false);
