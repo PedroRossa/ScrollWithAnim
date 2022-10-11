@@ -13,12 +13,12 @@ canvasOverlay.style.height = unityContainerHeight + "px";
 canvasOverlay.style.top = headerContentHeight + "px";
 
 //for mobile
-document.addEventListener("touchstart", onTouchStart, {passive:false});
-document.addEventListener('touchmove', onTouchMove, {passive:false});
-document.addEventListener('touchmove', onMobileTouch, {passive:false});
+document.addEventListener("touchstart", onTouchStart);
+document.addEventListener('touchmove', onTouchMove);
+document.addEventListener('touchmove', onMobileTouch);
 
 //for desktop
-document.addEventListener('wheel', onWheel, false);
+document.addEventListener('wheel', onWheel);
 
 const canvasOffsetToTouch = unityContainerHeight / 16;
 const canvasOffsetToWheel = unityContainerHeight / 4;
