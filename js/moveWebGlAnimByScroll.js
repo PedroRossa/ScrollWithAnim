@@ -2,9 +2,11 @@ const headerContent = document.querySelector("#header-content");
 const footerContent = document.querySelector("#footer-content");
 const canvasOverlay = document.querySelector("#canvas-overlay");
 
-const headerContentHeight = headerContent.offsetHeight;
-const unityContainerWidth = container.offsetWidth;
-const unityContainerHeight = container.offsetHeight;
+const headerContentHeight = headerContent.getBoundingClientRect().height;
+const unityContainerWidth = container.getBoundingClientRect().width;
+const unityContainerHeight = container.getBoundingClientRect().height;
+
+const unityCanvasPosition = headerContentHeight + headerContent.style.marginTop;
 
 footerContent.style.paddingTop = unityContainerHeight + "px";
 
@@ -66,12 +68,12 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
         if (!animationIsRunning) {
             if (scrollingDown) {
                 if (currentAnimationPosition < 1) {
-                    fixPageOnAnimatedCanvas(headerContentHeight);
+                    fixPageOnAnimatedCanvas();
                     return;
                 }
             } else {
                 if (currentAnimationPosition > 0) {
-                    fixPageOnAnimatedCanvas(headerContentHeight);
+                    fixPageOnAnimatedCanvas();
                     return;
                 }
             }
@@ -108,10 +110,11 @@ function updateAnimation(scrollDeltaY) {
     else return 0;
 }
 
-function fixPageOnAnimatedCanvas(fixPosition) {
+function fixPageOnAnimatedCanvas() {
     //stack window position at the canvas element
-    scrollWindowsToNewPos(0, fixPosition);
+    scrollWindowsToNewPos(0, unityCanvasPosition);
 
+    canvasOverlay.style.display = "none";
     document.body.style.overflow = "hidden";
     animationIsRunning = true;
 
@@ -122,6 +125,8 @@ function releasePageFromAnimatedCanvas(scrollingDown, newWindowPos) {
     //if scrolling down, indicates that the animation finished, else, it's back to the top page
     currentAnimationPosition = scrollingDown ? 1 : 0
     U_sendFloatValue(animateToPosParameter, currentAnimationPosition);
+    
+    canvasOverlay.style.display = "inline";
     document.body.style.overflow = "scroll";
     animationIsRunning = false;
     scrollWindowsToNewPos(0, newWindowPos);
