@@ -44,7 +44,6 @@ function onTouchStart(e) {
 function onTouchMove(e) {
     touchOffset.x = touchStart.x - e.touches[0].clientX;
     touchOffset.y = touchStart.y - e.touches[0].clientY;
-    var1.innerHTML = "Offset: " + touchOffset.y;
 }
 
 function onMobileTouch(e) {
@@ -58,14 +57,15 @@ function onWheel(e) {
 }
 
 function refreshCanvas(scrollDeltaY, canvasOffset) {
-    scrollPos = window.scrollY;
+    scrollPos = window.pageYOffset;
+    var1.innerHTML = "Cur Pos: " + scrollPos;
     debugPanel.style.paddingTop = scrollPos + 60 + "px";
 
     let scrollingDown = scrollDeltaY > 0;
     let isOnCanvasRegion = scrollPos > (headerContentHeight - Number(canvasOffset)) && scrollPos < (headerContentHeight + Number(canvasOffset));
 
     if (isOnCanvasRegion) {
-        var2.innerHTML = "Canvas Region";
+        var2.innerHTML = "Canvas " + headerContentHeight + " - "+ canvasOffset;
 
         if (!animationIsRunning) {
             if (scrollingDown) {
@@ -104,7 +104,7 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
         }
     }
 
-    var2.innerHTML = "Webpage Region";
+    var2.innerHTML = "Webpage " + headerContentHeight + " - "+ canvasOffset;
 }
 
 //return 1 to animation finished topDown, -1 finished downTop and 0 if not finished yet
