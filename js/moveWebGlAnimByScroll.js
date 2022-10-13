@@ -6,7 +6,7 @@ const headerContentHeight = headerContent.getBoundingClientRect().height;
 const unityContainerWidth = container.getBoundingClientRect().width;
 const unityContainerHeight = container.getBoundingClientRect().height;
 
-const unityCanvasPosition = headerContentHeight + headerContent.style.marginTop;
+const unityCanvasPosition = Number(headerContentHeight + headerContent.style.marginTop);
 
 footerContent.style.paddingTop = unityContainerHeight + "px";
 
@@ -22,7 +22,7 @@ document.addEventListener('touchmove', onMobileTouch);
 //for desktop
 document.addEventListener('wheel', onWheel);
 
-const canvasOffsetToTouch = unityContainerHeight / 16;
+const canvasOffsetToTouch = unityContainerHeight / 10;
 const canvasOffsetToWheel = unityContainerHeight / 4;
 
 const animateToPosParameter = "AnimateToPosition";
@@ -30,6 +30,8 @@ const animateToPosParameter = "AnimateToPosition";
 let animationIsRunning = false;
 let currentAnimationPosition = 0;
 let currentAnimState = -1;
+
+let windowFixed = false;
 
 var touchStart = { x: 0, y: 0 };
 var touchOffset = { x: 0, y: 0 };
@@ -60,7 +62,7 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
     debugPanel.style.paddingTop = scrollPos + 60 + "px";
 
     let scrollingDown = scrollDeltaY > 0;
-    let isOnCanvasRegion = scrollPos > (headerContentHeight - canvasOffset) && scrollPos < (headerContentHeight + canvasOffset);
+    let isOnCanvasRegion = scrollPos > (headerContentHeight - Number(canvasOffset)) && scrollPos < (headerContentHeight + Number(canvasOffset));
 
     if (isOnCanvasRegion) {
         var2.innerHTML = "Canvas Region";
@@ -79,14 +81,27 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
             }
         }
 
+        if(window.scrollY != unityCanvasPosition){
+            fixPageOnAnimatedCanvas();
+        }
+
         currentAnimState = updateAnimation(scrollDeltaY);
 
         if (scrollingDown && currentAnimState == 1) {
-            releasePageFromAnimatedCanvas(true, unityCanvasPosition + canvasOffset);
+            releasePageFromAnimatedCanvas(scrollingDown, unityCanvasPosition + canvasOffset);
         } else if (!scrollingDown && currentAnimState == -1) {
-            releasePageFromAnimatedCanvas(false, unityCanvasPosition - canvasOffset);
+            releasePageFromAnimatedCanvas(scrollingDown, unityCanvasPosition - canvasOffset);
         }
+
         return;
+    }
+
+    if(animationIsRunning){
+        if (scrollingDown) {
+            releasePageFromAnimatedCanvas(scrollingDown, unityCanvasPosition + canvasOffset);
+        } else {
+            releasePageFromAnimatedCanvas(scrollingDown, unityCanvasPosition - canvasOffset);
+        }
     }
 
     var2.innerHTML = "Webpage Region";
@@ -99,7 +114,7 @@ function updateAnimation(scrollDeltaY) {
 
     ///The position need to be normalized between 0 - 1
     U_sendFloatValue(animateToPosParameter, currentAnimationPosition);
-    
+
     if (currentAnimationPosition >= 1) return 1;
     else if (currentAnimationPosition <= 0) return -1;
     else return 0;
@@ -112,6 +127,7 @@ function fixPageOnAnimatedCanvas() {
     canvasOverlay.style.display = "none";
     document.body.style.overflow = "hidden";
     animationIsRunning = true;
+    windowFixed = true;
 
     var3.innerHTML = "animation is Running!";
 }
@@ -120,9 +136,11 @@ function releasePageFromAnimatedCanvas(scrollingDown, newWindowPos) {
     //if scrolling down, indicates that the animation finished, else, it's back to the top page
     currentAnimationPosition = scrollingDown ? 1 : 0
     U_sendFloatValue(animateToPosParameter, currentAnimationPosition);
-    
+
     canvasOverlay.style.display = "inline";
     document.body.style.overflow = "scroll";
     animationIsRunning = false;
+    windowFixed = false;
+
     scrollWindowsToNewPos(0, newWindowPos);
 }

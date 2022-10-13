@@ -1,14 +1,24 @@
 function scrollWindowsToNewPos(x, y) {
 
-    if(isNaN(x) || isNaN(y)) return;
+    if(isNaN(x) || isNaN(y)){
+        console.logerror("NAN", x, y)
+        return;
+    } 
 
-    uss.stopScrolling();
-    
     var numX = Number(x);
     var numY = Number(y);
-    uss.scrollTo(numX, numY, window, () => console.log("dOnE"));   
-    //window.scrollTo({ left: x, top: y, behavior: "auto" });
-    //setTimeout(() => { window.scrollTo({ left: x, top: y, behavior: "auto" }); }, 100);
+
+    uss.scrollTo(numX, numY, window,  () => console.log("dOnE"));   
+    uss.stopScrolling();
+    // if(window.scrollX != numX){
+    //     uss.stopScrollingX();
+    //     uss.scrollXTo(numX, window, () => console.log("re-scrolled Window X axis"));   
+    // }
+
+    // if(window.scrollY != numY){
+    //     uss.stopScrollingY();
+    //     uss.scrollYTo(numY, window, () => console.log("re-scrolled Window Y axis"));   
+    // }
 }
 
 function clamp01(value) {
