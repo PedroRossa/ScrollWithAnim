@@ -1,6 +1,14 @@
 function scrollWindowsToNewPos(x, y) {
-    window.scrollTo({ left: x, top: y, behavior: "auto" });
-    setTimeout(() => { window.scrollTo({ left: x, top: y, behavior: "auto" }); }, 100);
+
+    if(isNaN(x) || isNaN(y)) return;
+
+    uss.stopScrolling();
+    
+    var numX = Number(x);
+    var numY = Number(y);
+    uss.scrollTo(numX, numY, window, () => console.log("dOnE"));   
+    //window.scrollTo({ left: x, top: y, behavior: "auto" });
+    //setTimeout(() => { window.scrollTo({ left: x, top: y, behavior: "auto" }); }, 100);
 }
 
 function clamp01(value) {

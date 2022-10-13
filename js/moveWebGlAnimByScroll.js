@@ -80,16 +80,16 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
         }
 
         //Force the canvas position!
-        if (window.scrollY != headerContentHeight) {
-            scrollWindowsToNewPos(0, headerContentHeight);
-        }
+        // if (window.scrollY != unityCanvasPosition) {
+        //     scrollWindowsToNewPos(0, unityCanvasPosition);
+        // }
 
         currentAnimState = updateAnimation(scrollDeltaY);
 
         if (scrollingDown && currentAnimState == 1) {
-            releasePageFromAnimatedCanvas(true, headerContentHeight + canvasOffset);
+            releasePageFromAnimatedCanvas(true, unityCanvasPosition + canvasOffset);
         } else if (!scrollingDown && currentAnimState == -1) {
-            releasePageFromAnimatedCanvas(false, headerContentHeight - canvasOffset);
+            releasePageFromAnimatedCanvas(false, unityCanvasPosition - canvasOffset);
         }
         return;
     }
