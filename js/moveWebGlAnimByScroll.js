@@ -79,11 +79,6 @@ function refreshCanvas(scrollDeltaY, canvasOffset) {
             }
         }
 
-        //Force the canvas position!
-        // if (window.scrollY != unityCanvasPosition) {
-        //     scrollWindowsToNewPos(0, unityCanvasPosition);
-        // }
-
         currentAnimState = updateAnimation(scrollDeltaY);
 
         if (scrollingDown && currentAnimState == 1) {
